@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "352742891002",
+    "project_id": "emotion-detection-app-1db84",
+    "storage_bucket": "emotion-detection-app-1db84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352742891002:android:87c227b831c0f5dce25843",
+        "android_client_info": {
+          "package_name": "com.cherinet.emotion_detection_app_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352742891002-h4r2h5tkj4p8ljjpasvg53kqj6unmvn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGB_lLlPGLcN5GKHNynO5A19f_wNcECb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352742891002-h4r2h5tkj4p8ljjpasvg53kqj6unmvn0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
