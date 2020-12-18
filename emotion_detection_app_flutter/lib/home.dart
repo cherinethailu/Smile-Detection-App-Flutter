@@ -26,8 +26,8 @@ class Home extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Card(
-                  child: Image.asset(
-                    'assets/images/smiley-ai-pic.jpg',width:400,height:300,
+                  child: Image.network(
+                    'https://www.nviso.ai/uploads/cms_media/image-white-paper.jpg',width:400,height:300,
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(

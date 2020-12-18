@@ -1,3 +1,4 @@
+import 'package:emotion_detection_app_flutter/Firebase/authenticate.dart';
 import 'package:emotion_detection_app_flutter/main.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ class LogIn extends StatefulWidget {
   }
 }
 
+String errorMessage = '';
 String userEmail;
 String userPassword;
 final GlobalKey<FormState> logInGlobalKey = GlobalKey<FormState>();
@@ -20,6 +22,7 @@ Pattern emailPattern =
 
 class _MyLogIn extends State<LogIn> {
   @override
+  final AuthService _authService = AuthService();
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -43,10 +46,17 @@ class _MyLogIn extends State<LogIn> {
                 height: 30,
               ),
               FlatButton(
-                onPressed: () {
+                onPressed: () async {
                   if (logInGlobalKey.currentState.validate()) {
                     //loginGlobalKey.currentState.save();
                     //And Auth stuff
+                    dynamic authResult = _authService.logInWithEmailAndPassword(
+                        userEmail, userPassword);
+                    if (authResult == null) {
+                      setState(() {
+                        errorMessage = 'Email or password incorrect';
+                      });
+                    }
                   }
                 },
                 child: Text(
@@ -57,6 +67,8 @@ class _MyLogIn extends State<LogIn> {
                 color: Colors.blue,
                 hoverColor: Colors.white,
               ),
+              SizedBox(height: 15),
+                Text(errorMessage,style:TextStyle(color: Colors.red),),
               SizedBox(
                 height: 80,
               ),
@@ -106,7 +118,8 @@ Widget password() {
     validator: (String input) {
       if (input.isEmpty || input.length <= 7) {
         return 'Enter a valid password';
-      }
+      } else
+        userPassword = input;
     },
     decoration: InputDecoration(
       hintText: 'Password',

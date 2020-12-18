@@ -1,3 +1,4 @@
+import 'package:emotion_detection_app_flutter/Firebase/authenticate.dart';
 import 'package:emotion_detection_app_flutter/main.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class SignUp extends StatefulWidget {
     return _SignUp();
   }
 }
-
+String errorMessage = '';
 String userEmail;
 String userPassword;
 String userPhoneeNumber;
@@ -22,6 +23,7 @@ Pattern emailPattern =
 Pattern phonePattern = r'^(?:[+0]9)?[0-9]{10}$';
 
 class _SignUp extends State<SignUp> {
+  final AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,14 +63,23 @@ class _SignUp extends State<SignUp> {
                 phoneNumber(),
                 SizedBox(height: 30),
                 FlatButton(
-                  onPressed: () {
-                    if (signUpGlobalKey.currentState.validate()) {}
+                  onPressed: () async{
+                    if (signUpGlobalKey.currentState.validate()) {
+                    dynamic authResult =  _authService.signUpWithEmailAndPassword(userEmail, userPassword);
+                    if(authResult == null){
+                      setState(() {
+                        errorMessage = 'Error signing up';
+                      });
+                    }
+                    }
                   },
                   child: Text('Sign Up',style: TextStyle(color: Colors.white)),
                   padding: EdgeInsets.all(10),
                   color: Colors.blue,
                   hoverColor: Colors.white,
                 ),
+                SizedBox(height: 15),
+                Text(errorMessage)
               ],
             )),
       ),
@@ -83,7 +94,7 @@ Widget email() {
       if (input.isEmpty || !RegExp(emailPattern).hasMatch(input)) {
         return 'Enter a valid email';
       } else
-        return input;//Assign this to userEmail value later
+        userEmail = input;//Assign this to userEmail value later
     },
     decoration: InputDecoration(
       hintText: 'Email',
@@ -104,7 +115,7 @@ Widget password() {
         return 'Enter a valid password';
       }
       else
-      return input;//Use the password later
+      userPassword= input;//Use the password later
     },
     decoration: InputDecoration(
       hintText: 'Password',
@@ -121,11 +132,10 @@ Widget confirmPassword() {
     keyboardType: TextInputType.visiblePassword,
     obscureText: true,
     validator: (String input) {
-      if (input.isEmpty || input.length <= 7) {
+      if (input.isEmpty || input.length <= 7 || userPassword != input) {
         return 'Enter a valid password';
       }
-      else 
-      return input;//Use the password later
+      //Use the password later
     },
     decoration: InputDecoration(
       hintText: 'Confirm Password',
@@ -145,7 +155,7 @@ Widget phoneNumber() {
       {
         return 'Enter valid phone number';
       }
-      else return phone;//Assign this to userPhoneNumber later
+      //Assign this to userPhoneNumber later
     },
     decoration: InputDecoration(
       hintText: 'Your Phone',
