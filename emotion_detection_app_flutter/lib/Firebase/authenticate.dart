@@ -31,6 +31,9 @@ class AuthService {
       return null;
     }
   }
+  Future userResetPassword(String email) async{
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
 
   Stream<FirebaseUser> get user {
     return _firebaseAuth.onAuthStateChanged;

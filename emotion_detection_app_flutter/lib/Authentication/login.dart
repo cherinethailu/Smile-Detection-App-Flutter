@@ -14,9 +14,14 @@ class LogIn extends StatefulWidget {
 }
 
 String errorMessage = '';
-String userEmail;
+String userEmail = "";
 String userPassword;
+String userPasswordResetEmail = "";
+String userNotFound = "";
+String emailError = "";
+//int wrongPasswordCount = 0;
 final GlobalKey<FormState> logInGlobalKey = GlobalKey<FormState>();
+
 Pattern emailPattern =
     r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$';
 
@@ -38,6 +43,7 @@ class _MyLogIn extends State<LogIn> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               email(),
+
               SizedBox(
                 height: 30,
               ),
@@ -50,8 +56,8 @@ class _MyLogIn extends State<LogIn> {
                   if (logInGlobalKey.currentState.validate()) {
                     //loginGlobalKey.currentState.save();
                     //And Auth stuff
-                    dynamic authResult = _authService.logInWithEmailAndPassword(
-                        userEmail, userPassword);
+                    dynamic authResult = await _authService
+                        .logInWithEmailAndPassword(userEmail, userPassword);
                     if (authResult == null) {
                       setState(() {
                         errorMessage = 'Email or password incorrect';
@@ -67,23 +73,53 @@ class _MyLogIn extends State<LogIn> {
                 color: Colors.blue,
                 hoverColor: Colors.white,
               ),
-              SizedBox(height: 15),
-                Text(errorMessage,style:TextStyle(color: Colors.red),),
-              SizedBox(
-                height: 80,
+              // SizedBox(height: 15),
+              Text(
+                errorMessage,
+                style: TextStyle(color: Colors.red),
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text('Forgot password?'),
                   FlatButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        
+                        if (userEmail.isEmpty ||
+                            !RegExp(emailPattern).hasMatch(userEmail)) {
+                          setState(() {
+                            emailError = "Please enter a valid email";
+                            errorMessage ="";
+                          });
+                        } else {
+                          try {
+                            await _authService.userResetPassword(userEmail);
+                            setState(() {
+                              userPasswordResetEmail =
+                                  "Password resetting email has been sent to " +
+                                      userEmail;
+                              emailError ="";
+                              userNotFound ="";
+                            });
+                          } catch (e) {
+                            setState(() {
+                              userNotFound = "User email not found";
+                              userPasswordResetEmail = "";
+                              emailError ="";
+                            });
+                          }
+                        }
+                      },
                       child: Text(
                         "Reset",
                         style: TextStyle(color: Colors.blue),
                       ))
                 ],
-              )
+              ),
+              Text(emailError,style: TextStyle(color: Colors.red),),
+              Text(userPasswordResetEmail,style: TextStyle(color: Colors.blueAccent)),
+              Text(userNotFound,style: TextStyle(color: Colors.red)),
             ],
           ),
         ),

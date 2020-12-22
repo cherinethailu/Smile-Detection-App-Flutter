@@ -1,5 +1,6 @@
 import 'package:emotion_detection_app_flutter/Firebase/authenticate.dart';
 import 'package:emotion_detection_app_flutter/main.dart';
+import 'package:emotion_detection_app_flutter/route.dart' as route;
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,6 +28,7 @@ class _SignUp extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      onGenerateRoute: route.generateRoute,
       debugShowCheckedModeBanner: false,
       home:Builder(
         builder: (context) => Scaffold(
