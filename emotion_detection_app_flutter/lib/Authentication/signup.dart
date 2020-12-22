@@ -27,6 +27,7 @@ class _SignUp extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home:Builder(
         builder: (context) => Scaffold(
         
