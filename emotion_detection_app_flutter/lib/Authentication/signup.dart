@@ -13,6 +13,7 @@ class SignUp extends StatefulWidget {
     return _SignUp();
   }
 }
+
 String errorMessage = '';
 String userEmail;
 String userPassword;
@@ -28,65 +29,76 @@ class _SignUp extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateRoute: route.generateRoute,
-      debugShowCheckedModeBanner: false,
-      home:Builder(
-        builder: (context) => Scaffold(
-        
-        appBar: AppBar(
-          title: Text('Sign Up for free'),
-          centerTitle: true,
-        ),
-        body: Form(
-            key: signUpGlobalKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+        onGenerateRoute: route.generateRoute,
+        debugShowCheckedModeBanner: false,
+        home: Builder(
+          builder: (context) => Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: true,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              title: Text('Sign Up for free'),
+              centerTitle: true,
+            ),
+            body: Form(
+                key: signUpGlobalKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      'Already have an account?',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          'Already have an account?',
+                        ),
+                        FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('login');
+                            },
+                            child: Text(
+                              'Log In',
+                              style: TextStyle(color: Colors.cyan),
+                            )),
+                      ],
                     ),
+                    email(),
+                    SizedBox(height: 30),
+                    password(),
+                    SizedBox(height: 30),
+                    confirmPassword(),
+                    SizedBox(height: 30),
+                    phoneNumber(),
+                    SizedBox(height: 30),
                     FlatButton(
-                        onPressed: () {Navigator.of(context).pushNamed('login');},
-                        child: Text(
-                          'Log In',
-                          style: TextStyle(color: Colors.cyan),
-                        )),
+                      onPressed: () async {
+                        if (signUpGlobalKey.currentState.validate()) {
+                          dynamic authResult =
+                              _authService.signUpWithEmailAndPassword(
+                                  userEmail, userPassword);
+                          if (authResult == null) {
+                            setState(() {
+                              errorMessage = 'Error signing up';
+                            });
+                          }
+                        }
+                      },
+                      child: Text('Sign Up',
+                          style: TextStyle(color: Colors.white)),
+                      padding: EdgeInsets.all(10),
+                      color: Colors.blue,
+                      hoverColor: Colors.white,
+                    ),
+                    SizedBox(height: 15),
+                    Text(errorMessage)
                   ],
-                ),
-                email(),
-                SizedBox(height: 30),
-                password(),
-                SizedBox(height: 30),
-                confirmPassword(),
-                SizedBox(height: 30),
-                phoneNumber(),
-                SizedBox(height: 30),
-                FlatButton(
-                  onPressed: () async{
-                    if (signUpGlobalKey.currentState.validate()) {
-                    dynamic authResult =  _authService.signUpWithEmailAndPassword(userEmail, userPassword);
-                    if(authResult == null){
-                      setState(() {
-                        errorMessage = 'Error signing up';
-                      });
-                    }
-                    }
-                  },
-                  child: Text('Sign Up',style: TextStyle(color: Colors.white)),
-                  padding: EdgeInsets.all(10),
-                  color: Colors.blue,
-                  hoverColor: Colors.white,
-                ),
-                SizedBox(height: 15),
-                Text(errorMessage)
-              ],
-            )),
-      ),
-    ));
+                )),
+          ),
+        ));
   }
 }
 
@@ -97,7 +109,7 @@ Widget email() {
       if (input.isEmpty || !RegExp(emailPattern).hasMatch(input)) {
         return 'Enter a valid email';
       } else
-        userEmail = input;//Assign this to userEmail value later
+        userEmail = input; //Assign this to userEmail value later
     },
     decoration: InputDecoration(
       hintText: 'Email',
@@ -116,9 +128,8 @@ Widget password() {
     validator: (String input) {
       if (input.isEmpty || input.length <= 7) {
         return 'Enter a valid password';
-      }
-      else
-      userPassword= input;//Use the password later
+      } else
+        userPassword = input; //Use the password later
     },
     decoration: InputDecoration(
       hintText: 'Password',
@@ -153,9 +164,8 @@ Widget confirmPassword() {
 Widget phoneNumber() {
   return TextFormField(
     keyboardType: TextInputType.phone,
-    validator: (String phone){
-      if(phone.isEmpty || !RegExp(phonePattern).hasMatch(phone))
-      {
+    validator: (String phone) {
+      if (phone.isEmpty || !RegExp(phonePattern).hasMatch(phone)) {
         return 'Enter valid phone number';
       }
       //Assign this to userPhoneNumber later

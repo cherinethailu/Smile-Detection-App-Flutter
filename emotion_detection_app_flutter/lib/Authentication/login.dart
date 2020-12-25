@@ -19,7 +19,7 @@ String userPassword;
 String userPasswordResetEmail = "";
 String userNotFound = "";
 String emailError = "";
-//int wrongPasswordCount = 0;
+
 final GlobalKey<FormState> logInGlobalKey = GlobalKey<FormState>();
 
 Pattern emailPattern =
@@ -33,6 +33,10 @@ class _MyLogIn extends State<LogIn> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton (icon:Icon(Icons.arrow_back),onPressed: (){
+            Navigator.pop(context);
+          },),
+          automaticallyImplyLeading: true,
           title: Text('Emotion Detection'),
           centerTitle: true,
         ),
@@ -54,8 +58,6 @@ class _MyLogIn extends State<LogIn> {
               FlatButton(
                 onPressed: () async {
                   if (logInGlobalKey.currentState.validate()) {
-                    //loginGlobalKey.currentState.save();
-                    //And Auth stuff
                     dynamic authResult = await _authService
                         .logInWithEmailAndPassword(userEmail, userPassword);
                     if (authResult == null) {
@@ -73,7 +75,7 @@ class _MyLogIn extends State<LogIn> {
                 color: Colors.blue,
                 hoverColor: Colors.white,
               ),
-              // SizedBox(height: 15),
+              
               Text(
                 errorMessage,
                 style: TextStyle(color: Colors.red),
@@ -85,12 +87,11 @@ class _MyLogIn extends State<LogIn> {
                   Text('Forgot password?'),
                   FlatButton(
                       onPressed: () async {
-                        
-                        if (userEmail.isEmpty ||
-                            !RegExp(emailPattern).hasMatch(userEmail)) {
+                        if (!logInGlobalKey.currentState.validate()) {
+                              
                           setState(() {
                             emailError = "Please enter a valid email";
-                            errorMessage ="";
+                            errorMessage = "";
                           });
                         } else {
                           try {
@@ -99,14 +100,14 @@ class _MyLogIn extends State<LogIn> {
                               userPasswordResetEmail =
                                   "Password resetting email has been sent to " +
                                       userEmail;
-                              emailError ="";
-                              userNotFound ="";
+                              emailError = "";
+                              userNotFound = "";
                             });
                           } catch (e) {
                             setState(() {
                               userNotFound = "User email not found";
                               userPasswordResetEmail = "";
-                              emailError ="";
+                              emailError = "";
                             });
                           }
                         }
@@ -117,9 +118,13 @@ class _MyLogIn extends State<LogIn> {
                       ))
                 ],
               ),
-              Text(emailError,style: TextStyle(color: Colors.red),),
-              Text(userPasswordResetEmail,style: TextStyle(color: Colors.blueAccent)),
-              Text(userNotFound,style: TextStyle(color: Colors.red)),
+              Text(
+                emailError,
+                style: TextStyle(color: Colors.red),
+              ),
+              Text(userPasswordResetEmail,
+                  style: TextStyle(color: Colors.blueAccent)),
+              Text(userNotFound, style: TextStyle(color: Colors.red)),
             ],
           ),
         ),
