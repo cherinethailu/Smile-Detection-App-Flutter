@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
         
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.grey,
           title: Text("Emotion Detection"),
         ),
         body: Container(

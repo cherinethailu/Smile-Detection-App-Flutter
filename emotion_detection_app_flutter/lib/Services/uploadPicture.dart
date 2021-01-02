@@ -1,6 +1,8 @@
 import 'package:emotion_detection_app_flutter/Firebase/authenticate.dart';
 import 'package:emotion_detection_app_flutter/main.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 //Image uploading page
 main() {
@@ -17,11 +19,16 @@ class UploadPicture extends StatefulWidget {
 class _UploadPicture extends State<UploadPicture> {
   @override
   AuthService _firebaseAuth = AuthService();
+  String placeholderPictureAddress =
+      "assets/images/picture_placeholder.png";
+  Widget _uploadFromGallery() {}
+  Widget _uploadFromCamera() {}
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.grey,
           actions: <Widget>[
             FlatButton.icon(
               onPressed: () async {
@@ -41,11 +48,12 @@ class _UploadPicture extends State<UploadPicture> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
-                child: Image.network(
-                   
-                    "https://miro.medium.com/max/500/0*-ouKIOsDCzVCTjK-.png",width:400,height:300,
-                    fit: BoxFit.fill,),
-                    
+                child: Image.asset(
+                  placeholderPictureAddress,
+                  width: 400,
+                  height: 300,
+                  fit: BoxFit.fill,
+                ),
               ),
               SizedBox(
                 height: 50,
@@ -57,10 +65,11 @@ class _UploadPicture extends State<UploadPicture> {
                   RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(23.0),
-                        side: BorderSide(color: Colors.cyanAccent)),
+                        side: BorderSide(color: Colors.grey)),
                     onPressed: () {},
                     color: Colors.blue[50],
                     textColor: Colors.white,
+                    splashColor: Colors.teal[100],
                     child: Text("Camera",
                         style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
                   ),
@@ -70,9 +79,10 @@ class _UploadPicture extends State<UploadPicture> {
                   RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(23.0),
-                        side: BorderSide(color: Colors.cyanAccent)),
+                        side: BorderSide(color: Colors.grey)),
                     onPressed: () {},
                     color: Colors.blue[50],
+                    splashColor: Colors.teal[100],
                     textColor: Colors.white,
                     child: Text("Gallery",
                         style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
