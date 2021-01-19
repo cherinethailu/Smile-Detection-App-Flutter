@@ -1,8 +1,10 @@
 import 'package:emotion_detection_app_flutter/Firebase/authenticate.dart';
-import 'package:emotion_detection_app_flutter/main.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:mlkit/mlkit.dart';
+import 'dart:ui' as ui;
 
 //Image uploading page
 main() {
@@ -19,10 +21,51 @@ class UploadPicture extends StatefulWidget {
 class _UploadPicture extends State<UploadPicture> {
   @override
   AuthService _firebaseAuth = AuthService();
-  String placeholderPictureAddress =
-      "assets/images/picture_placeholder.png";
-  Widget _uploadFromGallery() {}
-  Widget _uploadFromCamera() {}
+  File placeholderPictureAddress;
+  List<Rect> rectArr = new List();
+  ui.Image image;
+  _uploadFromGallery() async {
+    placeholderPictureAddress =
+        await ImagePicker.pickImage(source: ImageSource.gallery);
+    FirebaseVisionImage firebaseVisionImage =
+        FirebaseVisionImage.fromFile(placeholderPictureAddress);
+    FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+    List<Face> listOfFaces =
+        await faceDetector.processImage(firebaseVisionImage);
+    for (Face face in listOfFaces) {
+      rectArr.add(face.boundingBox);
+    }
+    print(rectArr);
+    setState(() {});
+  }
+
+  _uploadFromCamera() async {
+    placeholderPictureAddress =
+        await ImagePicker.pickImage(source: ImageSource.camera);
+    FirebaseVisionImage firebaseVisionImage =
+        FirebaseVisionImage.fromFile(placeholderPictureAddress);
+    FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+    List<Face> listOfFaces =
+        await faceDetector.processImage(firebaseVisionImage);
+    for (Face face in listOfFaces) {
+      rectArr.add(face.boundingBox);
+    }
+    print(rectArr);
+    //var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
+
+    setState(() {});
+  }
+
+  Widget _checkIfPathIsEmpty() {
+    if (placeholderPictureAddress == null) {
+      this.setState(() {});
+      return Text("Please select an image to continue");
+    } else {
+      this.setState(() {});
+      return Image.file(placeholderPictureAddress);
+    }
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -48,12 +91,10 @@ class _UploadPicture extends State<UploadPicture> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
-                child: Image.asset(
-                  placeholderPictureAddress,
-                  width: 400,
-                  height: 300,
-                  fit: BoxFit.fill,
-                ),
+                width: 400,
+                height: 300,
+                child: _checkIfPathIsEmpty(),
+                alignment: Alignment.center,
               ),
               SizedBox(
                 height: 50,
@@ -66,7 +107,9 @@ class _UploadPicture extends State<UploadPicture> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(23.0),
                         side: BorderSide(color: Colors.grey)),
-                    onPressed: () {},
+                    onPressed: () {
+                      _uploadFromCamera();
+                    },
                     color: Colors.blue[50],
                     textColor: Colors.white,
                     splashColor: Colors.teal[100],
@@ -80,7 +123,9 @@ class _UploadPicture extends State<UploadPicture> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(23.0),
                         side: BorderSide(color: Colors.grey)),
-                    onPressed: () {},
+                    onPressed: () {
+                      _uploadFromGallery();
+                    },
                     color: Colors.blue[50],
                     splashColor: Colors.teal[100],
                     textColor: Colors.white,
