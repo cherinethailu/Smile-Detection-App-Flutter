@@ -3,7 +3,6 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:mlkit/mlkit.dart';
 import 'dart:ui' as ui;
 
 //Image uploading page
@@ -30,13 +29,23 @@ class _UploadPicture extends State<UploadPicture> {
     FirebaseVisionImage firebaseVisionImage =
         FirebaseVisionImage.fromFile(placeholderPictureAddress);
     FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+
     List<Face> listOfFaces =
         await faceDetector.processImage(firebaseVisionImage);
     for (Face face in listOfFaces) {
       rectArr.add(face.boundingBox);
+      
+    
+    print(face.smilingProbability);
+  
+
     }
-    print(rectArr);
-    setState(() {});
+    var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
+    decodeImageFromList(bytesFromImageFile).then((img) {
+      setState(() {
+        image = img;
+      });
+    });
   }
 
   _uploadFromCamera() async {
@@ -50,12 +59,18 @@ class _UploadPicture extends State<UploadPicture> {
     for (Face face in listOfFaces) {
       rectArr.add(face.boundingBox);
     }
-    print(rectArr);
-    //var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
+    var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
+    decodeImageFromList(bytesFromImageFile).then((img) {
+      setState(() {
+        image = img;
+      });
+    });
 
     setState(() {});
   }
 
+    
+  
   Widget _checkIfPathIsEmpty() {
     if (placeholderPictureAddress == null) {
       this.setState(() {});
@@ -67,6 +82,8 @@ class _UploadPicture extends State<UploadPicture> {
   }
 
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -86,58 +103,99 @@ class _UploadPicture extends State<UploadPicture> {
           ],
         ),
         body: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: 400,
-                height: 300,
-                child: _checkIfPathIsEmpty(),
-                alignment: Alignment.center,
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(23.0),
-                        side: BorderSide(color: Colors.grey)),
-                    onPressed: () {
-                      _uploadFromCamera();
-                    },
-                    color: Colors.blue[50],
-                    textColor: Colors.white,
-                    splashColor: Colors.teal[100],
-                    child: Text("Camera",
-                        style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 400,
+                  height: 300,
+                  child: _checkIfPathIsEmpty(),
+                  alignment: Alignment.center,
+                ),
+                FittedBox(
+                  child: SizedBox(
+                    height: image == null ? height : image.height.toDouble(),
+                    width: image == null ? width : image.width.toDouble(),
+                    child: CustomPaint(
+                      painter: Painter(rectArr, image),
+                    ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(23.0),
-                        side: BorderSide(color: Colors.grey)),
-                    onPressed: () {
-                      _uploadFromGallery();
-                    },
-                    color: Colors.blue[50],
-                    splashColor: Colors.teal[100],
-                    textColor: Colors.white,
-                    child: Text("Gallery",
-                        style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
-                  ),
-                ],
-              )
-            ],
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(23.0),
+                          side: BorderSide(color: Colors.grey)),
+                      onPressed: () {
+                        _uploadFromCamera();
+                      },
+                      color: Colors.blue[50],
+                      textColor: Colors.white,
+                      splashColor: Colors.teal[100],
+                      child: Text("Camera",
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.blueGrey)),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(23.0),
+                          side: BorderSide(color: Colors.grey)),
+                      onPressed: () {
+                        _uploadFromGallery();
+                      },
+                      color: Colors.blue[50],
+                      splashColor: Colors.teal[100],
+                      textColor: Colors.white,
+                      child: Text("Gallery",
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.blueGrey)),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+class Painter extends CustomPainter {
+  Painter(@required this.rect, @required this.image);
+
+  final List<Rect> rect;
+  ui.Image image;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7;
+      
+
+    if (image != null) {
+      canvas.drawImage(image, Offset.zero, paint);
+    }
+    for (var i = 0; i <= rect.length - 1; i++) {
+      canvas.drawRect(rect[i], paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(oldDelegate) {
+    return true;
   }
 }

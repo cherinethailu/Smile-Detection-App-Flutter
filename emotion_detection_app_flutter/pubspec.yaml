@@ -25,17 +25,19 @@ dependencies:
   cupertino_icons: ^0.1.2
   firebase_auth: ^0.14.0+5
   provider: ^3.1.0
-  http: ^0.12.2
-  starflut: ^0.6.0
   image_picker: ^0.6.7+17
-  mlkit: ^0.15.1
   firebase_ml_vision: ^0.9.2
   firebase_core: ^0.4.0
   
+  
 dev_dependencies:
+  flutter_launcher_icons: ^0.7.0
   flutter_test:
     sdk: flutter
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/face_recognition_icon.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
