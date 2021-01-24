@@ -23,22 +23,32 @@ class _UploadPicture extends State<UploadPicture> {
   File placeholderPictureAddress;
   List<Rect> rectArr = new List();
   ui.Image image;
+  String smileText = "";
   _uploadFromGallery() async {
     placeholderPictureAddress =
         await ImagePicker.pickImage(source: ImageSource.gallery);
     FirebaseVisionImage firebaseVisionImage =
         FirebaseVisionImage.fromFile(placeholderPictureAddress);
-    FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+    FaceDetector faceDetector =
+        FirebaseVision.instance.faceDetector(FaceDetectorOptions(
+      enableClassification: true,
+      enableLandmarks: true,
+    ));
 
     List<Face> listOfFaces =
         await faceDetector.processImage(firebaseVisionImage);
     for (Face face in listOfFaces) {
       rectArr.add(face.boundingBox);
-      
-    
-    print(face.smilingProbability);
-  
-
+      setState(() {
+        if (face.smilingProbability > 0.86) {
+          smileText = 'Big smile with teeth😁, no wonder you are having a good day';
+        } else if (face.smilingProbability > 0.8) {
+          smileText = 'Big Smile😃';
+        } else if (face.smilingProbability > 0.3) {
+          smileText = 'Smile😀';
+        } else
+          smileText = 'I see no smile. \nSomething wrong?😳';
+      });
     }
     var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
     decodeImageFromList(bytesFromImageFile).then((img) {
@@ -53,11 +63,25 @@ class _UploadPicture extends State<UploadPicture> {
         await ImagePicker.pickImage(source: ImageSource.camera);
     FirebaseVisionImage firebaseVisionImage =
         FirebaseVisionImage.fromFile(placeholderPictureAddress);
-    FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+    FaceDetector faceDetector =
+        FirebaseVision.instance.faceDetector(FaceDetectorOptions(
+      enableClassification: true,
+      enableLandmarks: true,
+    ));
     List<Face> listOfFaces =
         await faceDetector.processImage(firebaseVisionImage);
     for (Face face in listOfFaces) {
       rectArr.add(face.boundingBox);
+      setState(() {
+        if (face.smilingProbability > 0.86) {
+          smileText = 'Big smile with teeth😁';
+        } else if (face.smilingProbability > 0.8) {
+          smileText = 'Big Smile😃';
+        } else if (face.smilingProbability > 0.3) {
+          smileText = 'Smile😀';
+        } else
+          smileText = 'I see no smile😳';
+      });
     }
     var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
     decodeImageFromList(bytesFromImageFile).then((img) {
@@ -69,8 +93,6 @@ class _UploadPicture extends State<UploadPicture> {
     setState(() {});
   }
 
-    
-  
   Widget _checkIfPathIsEmpty() {
     if (placeholderPictureAddress == null) {
       this.setState(() {});
@@ -114,6 +136,10 @@ class _UploadPicture extends State<UploadPicture> {
                   child: _checkIfPathIsEmpty(),
                   alignment: Alignment.center,
                 ),
+                Text(
+                  smileText,
+                  style: TextStyle(color: Colors.blue, fontSize: 30),
+                ),
                 FittedBox(
                   child: SizedBox(
                     height: image == null ? height : image.height.toDouble(),
@@ -124,7 +150,7 @@ class _UploadPicture extends State<UploadPicture> {
                   ),
                 ),
                 SizedBox(
-                  height: 50,
+                  height: 10,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +210,6 @@ class Painter extends CustomPainter {
       ..color = Colors.red
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7;
-      
 
     if (image != null) {
       canvas.drawImage(image, Offset.zero, paint);
