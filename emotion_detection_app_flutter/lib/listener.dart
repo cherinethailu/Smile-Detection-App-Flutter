@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
   @override
-  AuthService _authService = AuthService();
+  //AuthService _authService = AuthService();
   Widget build(BuildContext context) {
     final userData = Provider.of<FirebaseUser>(context);
     if(userData == null){

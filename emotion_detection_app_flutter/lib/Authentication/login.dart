@@ -12,8 +12,8 @@ class LogIn extends StatefulWidget {
     return _MyLogIn();
   }
 }
-
-String errorMessage = '';
+TextEditingController emailController = TextEditingController();
+String errorMessage = "";
 String userEmail = "";
 String userPassword;
 String userPasswordResetEmail = "";
@@ -26,6 +26,16 @@ Pattern emailPattern =
     r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$';
 
 class _MyLogIn extends State<LogIn> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    errorMessage = "";
+    emailError = "";
+    userNotFound = "";
+    userPasswordResetEmail = "";
+  }
   @override
   final AuthService _authService = AuthService();
   Widget build(BuildContext context) {
@@ -33,11 +43,14 @@ class _MyLogIn extends State<LogIn> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          leading: IconButton (icon:Icon(Icons.arrow_back),onPressed: (){
+          backgroundColor: Colors.grey,
+          leading: IconButton (
+            icon:Icon(Icons.arrow_back),
+            onPressed: (){
             Navigator.pop(context);
           },),
           automaticallyImplyLeading: true,
-          title: Text('Emotion Detection'),
+          title: Text('Face Detection'),
           centerTitle: true,
         ),
         body: Form(
@@ -63,6 +76,9 @@ class _MyLogIn extends State<LogIn> {
                     if (authResult == null) {
                       setState(() {
                         errorMessage = 'Email or password incorrect';
+                        userPasswordResetEmail = "" ;
+                        emailError = "";
+                        userNotFound = "";
                       });
                     }
                   }
@@ -85,21 +101,24 @@ class _MyLogIn extends State<LogIn> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text('Forgot password?'),
-                  FlatButton(
+                  TextButton(
                       onPressed: () async {
-                        if (!logInGlobalKey.currentState.validate()) {
-                              
+                        if (emailController.text.isEmpty || !RegExp(emailPattern).hasMatch(emailController.text)) {
                           setState(() {
                             emailError = "Please enter a valid email";
                             errorMessage = "";
                           });
                         } else {
                           try {
-                            await _authService.userResetPassword(userEmail);
+                            // String email = emailController.text.trim();
+                            var value = await _authService.userResetPassword(emailController.text.trim());
                             setState(() {
+
                               userPasswordResetEmail =
                                   "Password resetting email has been sent to " +
-                                      userEmail;
+                                      emailController.text.trim();
+                              print(emailController.text.trim());
+                              print(value);
                               emailError = "";
                               userNotFound = "";
                             });
@@ -108,6 +127,7 @@ class _MyLogIn extends State<LogIn> {
                               userNotFound = "User email not found";
                               userPasswordResetEmail = "";
                               emailError = "";
+                              errorMessage = "";
                             });
                           }
                         }
@@ -136,6 +156,7 @@ class _MyLogIn extends State<LogIn> {
 Widget email() {
   return TextFormField(
     keyboardType: TextInputType.emailAddress,
+    controller: emailController,
     validator: (String input) {
       if (input.isEmpty || !RegExp(emailPattern).hasMatch(input)) {
         return 'Enter a valid email';

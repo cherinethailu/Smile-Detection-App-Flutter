@@ -18,21 +18,23 @@ class UploadPicture extends StatefulWidget {
 }
 
 class _UploadPicture extends State<UploadPicture> {
+
   @override
   AuthService _firebaseAuth = AuthService();
   File placeholderPictureAddress;
   List<Rect> rectArr = new List();
   ui.Image image;
   String smileText = "";
-  _uploadFromGallery() async {
-    placeholderPictureAddress =
-        await ImagePicker.pickImage(source: ImageSource.gallery);
+
+  _uploader(var placeHolderPictureAddress) async{
     FirebaseVisionImage firebaseVisionImage =
-        FirebaseVisionImage.fromFile(placeholderPictureAddress);
+    FirebaseVisionImage.fromFile(placeholderPictureAddress);
     FaceDetector faceDetector =
-        FirebaseVision.instance.faceDetector(FaceDetectorOptions(
+    FirebaseVision.instance.faceDetector(FaceDetectorOptions(
       enableClassification: true,
       enableLandmarks: true,
+      enableContours: true,
+      enableTracking: true,
     ));
 
     List<Face> listOfFaces =
@@ -58,39 +60,17 @@ class _UploadPicture extends State<UploadPicture> {
     });
   }
 
+  _uploadFromGallery() async {
+    placeholderPictureAddress =
+        await ImagePicker.pickImage(source: ImageSource.gallery);
+    _uploader(placeholderPictureAddress);
+
+  }
+
   _uploadFromCamera() async {
     placeholderPictureAddress =
         await ImagePicker.pickImage(source: ImageSource.camera);
-    FirebaseVisionImage firebaseVisionImage =
-        FirebaseVisionImage.fromFile(placeholderPictureAddress);
-    FaceDetector faceDetector =
-        FirebaseVision.instance.faceDetector(FaceDetectorOptions(
-      enableClassification: true,
-      enableLandmarks: true,
-    ));
-    List<Face> listOfFaces =
-        await faceDetector.processImage(firebaseVisionImage);
-    for (Face face in listOfFaces) {
-      rectArr.add(face.boundingBox);
-      setState(() {
-        if (face.smilingProbability > 0.86) {
-          smileText = 'Big smile with teeth😁';
-        } else if (face.smilingProbability > 0.8) {
-          smileText = 'Big Smile😃';
-        } else if (face.smilingProbability > 0.3) {
-          smileText = 'Smile😀';
-        } else
-          smileText = 'I see no smile😳';
-      });
-    }
-    var bytesFromImageFile = placeholderPictureAddress.readAsBytesSync();
-    decodeImageFromList(bytesFromImageFile).then((img) {
-      setState(() {
-        image = img;
-      });
-    });
-
-    setState(() {});
+    _uploader(placeholderPictureAddress);
   }
 
   Widget _checkIfPathIsEmpty() {
@@ -99,13 +79,13 @@ class _UploadPicture extends State<UploadPicture> {
       return Text("Please select an image to continue");
     } else {
       this.setState(() {});
-      return Image.file(placeholderPictureAddress);
+      return Text("Image has been processed successfully!");
     }
   }
 
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final _mediaQueryHeight = MediaQuery.of(context).size.height;
+    final _mediaQueryWidth = MediaQuery.of(context).size.width;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -131,8 +111,8 @@ class _UploadPicture extends State<UploadPicture> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  width: 400,
-                  height: 300,
+                  width: _mediaQueryWidth,
+                  height: 50,
                   child: _checkIfPathIsEmpty(),
                   alignment: Alignment.center,
                 ),
@@ -142,10 +122,10 @@ class _UploadPicture extends State<UploadPicture> {
                 ),
                 FittedBox(
                   child: SizedBox(
-                    height: image == null ? height : image.height.toDouble(),
-                    width: image == null ? width : image.width.toDouble(),
+                    height: image == null ? 100 : image.height.toDouble(),
+                    width: image == null ? _mediaQueryWidth : image.width.toDouble(),
                     child: CustomPaint(
-                      painter: Painter(rectArr, image),
+                     painter: Painter(rectArr, image),
                     ),
                   ),
                 ),

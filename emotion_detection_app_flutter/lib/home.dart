@@ -16,7 +16,7 @@ class Home extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.grey,
-          title: Text("Emotion Detection"),
+          title: Text("Face Detection"),
         ),
         body: Container(
           alignment: Alignment.center,
@@ -27,19 +27,20 @@ class Home extends StatelessWidget {
               children: <Widget>[
                 Card(
                   child: Image.network(
-                    'https://www.nviso.ai/uploads/cms_media/image-white-paper.jpg',width:400,height:300,
+                    'https://i.ytimg.com/vi/1BB4nq8Dnx8/maxresdefault.jpg',width:400,height:300,
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  elevation: 5,
+                  elevation: 15,
                   margin: EdgeInsets.all(10),
                 ),
                 SizedBox(
                   height: 40,
                 ),
                 RaisedButton(
+
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(23.0),
                       side: BorderSide(color: Colors.cyanAccent)),

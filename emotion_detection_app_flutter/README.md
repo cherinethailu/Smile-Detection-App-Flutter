@@ -1,7 +1,6 @@
 # emotion_detection_app_flutter
 
-A new Flutter project.
-
+A smile detection app build with Firebase Auth and Firebase MLKit
 ## Getting Started
 
 This project is a starting point for a Flutter application.

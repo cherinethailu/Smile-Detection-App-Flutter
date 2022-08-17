@@ -17,7 +17,7 @@ class SignUp extends StatefulWidget {
 String errorMessage = '';
 String userEmail;
 String userPassword;
-String userPhoneeNumber;
+String userPhoneNumber;
 final GlobalKey<FormState> signUpGlobalKey = GlobalKey<FormState>();
 //Patterns for email and phone number
 Pattern emailPattern =
@@ -43,59 +43,62 @@ class _SignUp extends State<SignUp> {
               ),
               title: Text('Sign Up for free'),
               centerTitle: true,
+              backgroundColor: Colors.grey,
             ),
             body: Form(
                 key: signUpGlobalKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Text(
-                          'Already have an account?',
-                        ),
-                        FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('login');
-                            },
-                            child: Text(
-                              'Log In',
-                              style: TextStyle(color: Colors.cyan),
-                            )),
-                      ],
-                    ),
-                    email(),
-                    SizedBox(height: 30),
-                    password(),
-                    SizedBox(height: 30),
-                    confirmPassword(),
-                    SizedBox(height: 30),
-                    phoneNumber(),
-                    SizedBox(height: 30),
-                    FlatButton(
-                      onPressed: () async {
-                        if (signUpGlobalKey.currentState.validate()) {
-                          dynamic authResult =
-                              _authService.signUpWithEmailAndPassword(
-                                  userEmail, userPassword);
-                          if (authResult == null) {
-                            setState(() {
-                              errorMessage = 'Error signing up';
-                            });
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            'Already have an account?',
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed('login');
+                              },
+                              child: Text(
+                                'Log In',
+                                style: TextStyle(color: Colors.cyan),
+                              )),
+                        ],
+                      ),
+                      email(),
+                      SizedBox(height: 30),
+                      password(),
+                      SizedBox(height: 30),
+                      confirmPassword(),
+                      SizedBox(height: 30),
+                      phoneNumber(),
+                      SizedBox(height: 30),
+                      FlatButton(
+                        onPressed: () async {
+                          if (signUpGlobalKey.currentState.validate()) {
+                            dynamic authResult =
+                                _authService.signUpWithEmailAndPassword(
+                                    userEmail, userPassword);
+                            if (authResult == null) {
+                              setState(() {
+                                errorMessage = 'Error signing up';
+                              });
+                            }
                           }
-                        }
-                      },
-                      child: Text('Sign Up',
-                          style: TextStyle(color: Colors.white)),
-                      padding: EdgeInsets.all(10),
-                      color: Colors.blue,
-                      hoverColor: Colors.white,
-                    ),
-                    SizedBox(height: 15),
-                    Text(errorMessage)
-                  ],
+                        },
+                        child: Text('Sign Up',
+                            style: TextStyle(color: Colors.white)),
+                        padding: EdgeInsets.all(10),
+                        color: Colors.blue[300],
+                        hoverColor: Colors.white,
+                      ),
+                      SizedBox(height: 15),
+                      Text(errorMessage)
+                    ],
+                  ),
                 )),
           ),
         ));

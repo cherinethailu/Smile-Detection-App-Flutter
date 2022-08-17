@@ -10,7 +10,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => Home());
     case LogInRoute:
       return MaterialPageRoute(builder: (context) => LogIn());
-    case SignUpRotue:
+    case SignUpRoute:
       return MaterialPageRoute(builder: (context) => SignUp());
     default:
        return MaterialPageRoute(builder: (context) => Home());
@@ -18,4 +18,4 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 }
 const String HomeRoute = '/';
 const String LogInRoute = 'login';
-const String SignUpRotue = 'signup';
+const String SignUpRoute = 'signup';
